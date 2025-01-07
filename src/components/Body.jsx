@@ -1,14 +1,16 @@
-import React from 'react'
-import { Outlet } from 'react-router'
+import React from "react";
+import { Outlet } from "react-router";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
 
 const Body = () => {
   return (
     <>
-    <h1>Body start</h1>
-    <Outlet/>
-    <h1>Body end</h1>
+      <Navbar />
+      <Outlet />
+      <Footer />
     </>
-  )
-}
+  );
+};
 
-export default Body
+export default Body;
