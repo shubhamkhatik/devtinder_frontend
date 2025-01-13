@@ -1,5 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router";
-import Body from "./components/Body";
+import { BrowserRouter, Route, Routes, useNavigate } from "react-router";
 import Feed from "./components/Feed";
 import Login from "./components/Login";
 import Profile from "./components/Profile";
@@ -7,6 +6,7 @@ import Connections from "./components/Connections";
 import Requests from "./components/Requests";
 import { Provider } from "react-redux";
 import RTKstore from "./utils/RTKstore";
+import Body from "./components/Body";
 
 function App() {
   return (
@@ -22,6 +22,7 @@ function App() {
             <Route path="/requests" element={<Requests />} />
             {/* child Route close */}
           </Route>
+          <Route path="*" element={<div>Page not found! 404</div>} />
         </Routes>
       </BrowserRouter>
     </Provider>
