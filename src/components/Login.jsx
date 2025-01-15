@@ -14,6 +14,7 @@ const Login = () => {
   const [error, setError] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
     try {
@@ -96,12 +97,20 @@ const Login = () => {
               <div className="label">
                 <span className="label-text">Password</span>
               </div>
-              <input
-                type="password"
-                value={password}
-                className="input input-bordered w-full max-w-xs"
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <label className="input input-bordered flex items-center gap-2">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  className="grow"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <span
+                  className="badge badge-info  cursor-pointer"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? "hide" : "show"}
+                </span>
+              </label>
             </label>
           </div>
           <p className="text-red-500">{error}</p>

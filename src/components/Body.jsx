@@ -14,18 +14,21 @@ const Body = () => {
 
   const getUserByToken = async () => {
     try {
-      const res = await axios.get(BASE_URL + "/auth/me", { withCredentials: true }); // Ensure cookies are sent
-      dispatch(addUser(res.data.data)); // Update Redux with the user data
+      //insted we can use profile/view api to get user
+      const res = await axios.get(BASE_URL + "/auth/me", {
+        withCredentials: true,
+      }); 
+      dispatch(addUser(res.data.data)); 
     } catch (error) {
       console.error("Authentication failed:", error);
-      dispatch(addUser(null)); 
-      navigate("/login"); 
+      dispatch(addUser(null));
+      navigate("/login");
     }
   };
 
   useEffect(() => {
     if (!user) {
-      getUserByToken(); 
+      getUserByToken();
     }
   }, [user]);
 
