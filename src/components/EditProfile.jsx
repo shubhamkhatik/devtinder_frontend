@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import UserCard from "./UserCard";
 import axios from "axios";
 import { BASE_URL } from "../utils/constants";
+import { addUser } from "../utils/userSlice";
 
 
 const EditProfile = ({ user }) => {
@@ -32,14 +33,12 @@ const EditProfile = ({ user }) => {
         { withCredentials: true }
       );
    
-
       dispatch(addUser(res?.data?.data));
       setShowToast(true);
       setTimeout(() => {
         setShowToast(false);
       }, 3000);
     } catch (err) {
-        console.log("kkk",err);
       setError(err.response.data.message);
     }
   };
@@ -129,7 +128,7 @@ const EditProfile = ({ user }) => {
           </div>
         </div>
         <UserCard
-          user={{ firstName, lastName, photoUrl, age, gender, about }}
+          feed={{ firstName, lastName, photoUrl, age, gender, about }}
         />
       </div>
       {showToast && (

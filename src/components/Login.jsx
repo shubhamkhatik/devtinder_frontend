@@ -17,6 +17,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
+    setError("");
     try {
       const res = await axios.post(
         BASE_URL + "/login",
@@ -26,11 +27,10 @@ const Login = () => {
         },
         { withCredentials: true }
       );
-      console.log(res.data.message);
       dispatch(addUser(res.data.data));
       return navigate("/");
     } catch (err) {
-      setError(err?.response?.data || "Something went wrong");
+      setError(err?.response?.data || err.message ||"Something went wrong");
     }
   };
 
