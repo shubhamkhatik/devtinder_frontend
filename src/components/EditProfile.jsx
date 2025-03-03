@@ -7,6 +7,7 @@ import { addUser } from "../utils/userSlice";
 
 
 const EditProfile = ({ user }) => {
+  console.log("user", user);
   const [firstName, setFirstName] = useState(user.firstName);
   const [lastName, setLastName] = useState(user.lastName);
   const [photoUrl, setPhotoUrl] = useState(user.photoUrl);
@@ -16,6 +17,9 @@ const EditProfile = ({ user }) => {
   const [error, setError] = useState("");
   const dispatch = useDispatch();
   const [showToast, setShowToast] = useState(false);
+
+  const [skills, setSkills] = useState(user.skills || []);
+  const [newSkill, setNewSkill] = useState("");
 
   const saveProfile = async () => {
     setError("");
@@ -29,6 +33,7 @@ const EditProfile = ({ user }) => {
           age,
           gender,
           about,
+          skills
         },
         { withCredentials: true }
       );
@@ -42,6 +47,16 @@ const EditProfile = ({ user }) => {
       setError(err.response.data.message);
     }
   };
+  const handleAddSkill = () => {
+    if (newSkill.trim() && !skills.includes(newSkill.trim())) {
+      setSkills([...skills, newSkill.trim()]);
+      setNewSkill(""); // Clear the input after adding
+    }
+  };
+
+  const handleRemoveSkill = (skill) => {
+    setSkills(skills.filter((s) => s !== skill));
+  };
 
   return (
     <>
@@ -50,6 +65,8 @@ const EditProfile = ({ user }) => {
           <div className="card bg-base-300 w-96 shadow-xl">
             <div className="card-body">
               <h2 className="card-title justify-center">Edit Profile</h2>
+              <span className="label-text">Email:{user.emailId}</span>
+
               <div>
                 <label className="form-control w-full max-w-xs my-2">
                   <div className="label">
@@ -116,6 +133,41 @@ const EditProfile = ({ user }) => {
                     className="input input-bordered w-full max-w-xs"
                     onChange={(e) => setAbout(e.target.value)}
                   />
+                </label>
+                <label className="form-control w-full max-w-xs my-2">
+                  <div className="label">
+                    <span className="label-text">Skills:</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="text"
+                      value={newSkill}
+                      className="input input-bordered w-full"
+                      onChange={(e) => setNewSkill(e.target.value)}
+                    />
+                    <button
+                      className="btn btn-primary"
+                      onClick={handleAddSkill}
+                    >
+                      Add Skill
+                    </button>
+                  </div>
+                  <ul className="mt-2">
+                    {skills.map((skill, index) => (
+                      <li
+                        key={index}
+                        className="flex items-center justify-between"
+                      >
+                        <span>{skill}</span>
+                        <button
+                          className="btn btn-sm btn-error"
+                          onClick={() => handleRemoveSkill(skill)}
+                        >
+                          Remove
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
                 </label>
               </div>
               <p className="text-red-500">{error}</p>

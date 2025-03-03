@@ -2,11 +2,14 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { BASE_URL } from "../utils/constants";
 import { removeUserFromFeed } from "../utils/feedSlice";
+import useToast from "../hooks/useToast";
+import Toast from "./Toast";
 
 const UserCard = ({ feed }) => {
   if (!feed) {
     return null;
   }
+ const { toast, showToast } = useToast();
 
   const { _id, firstName, lastName, photoUrl, age, gender, about } = feed;
   const dispatch = useDispatch();
@@ -20,12 +23,15 @@ const UserCard = ({ feed }) => {
         { withCredentials: true }
       );
       dispatch(removeUserFromFeed(userId));
+      showToast(`Request ${status} successfully!`, "success");
     } catch (err) {
       console.error("Error sending request:", err)
+      showToast("Failed to send request. Please try again.", "error");
     }
   };
 
   return (
+    <>
     <div className="card bg-base-300 w-96 shadow-xl">
       <figure>
         <img src={photoUrl} alt="photo" />
@@ -49,7 +55,10 @@ const UserCard = ({ feed }) => {
           </button>
         </div>
       </div>
+
     </div>
+    {toast && <Toast toast={toast} />}
+    </>
   );
 };
 export default UserCard;
