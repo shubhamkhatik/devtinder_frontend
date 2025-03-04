@@ -5,9 +5,7 @@ import axios from "axios";
 import { BASE_URL } from "../utils/constants";
 import { addUser } from "../utils/userSlice";
 
-
 const EditProfile = ({ user }) => {
-  console.log("user", user);
   const [firstName, setFirstName] = useState(user.firstName);
   const [lastName, setLastName] = useState(user.lastName);
   const [photoUrl, setPhotoUrl] = useState(user.photoUrl);
@@ -33,11 +31,11 @@ const EditProfile = ({ user }) => {
           age,
           gender,
           about,
-          skills
+          skills,
         },
         { withCredentials: true }
       );
-   
+
       dispatch(addUser(res?.data?.data));
       setShowToast(true);
       setTimeout(() => {
@@ -60,129 +58,161 @@ const EditProfile = ({ user }) => {
 
   return (
     <>
-      <div className="flex justify-center my-10">
-        <div className="flex justify-center mx-10">
-          <div className="card bg-base-300 w-96 shadow-xl">
-            <div className="card-body">
-              <h2 className="card-title justify-center">Edit Profile</h2>
-              <span className="label-text">Email:{user.emailId}</span>
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col lg:flex-row gap-8 justify-center items-start">
+          {/* Edit Profile Form */}
+          <div className="w-full lg:w-1/2">
+            <div className="card bg-base-300 shadow-xl">
+              <div className="card-body">
+                <h2 className="card-title justify-center text-2xl mb-6">
+                  Edit Profile
+                </h2>
+                <span className="text-gray-400 mb-4">
+                  Email: {user.emailId}
+                </span>
 
-              <div>
-                <label className="form-control w-full max-w-xs my-2">
-                  <div className="label">
-                    <span className="label-text">First Name:</span>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <label className="form-control">
+                      <div className="label">
+                        <span className="label-text">First Name</span>
+                      </div>
+                      <input
+                        type="text"
+                        value={firstName}
+                        className="input input-bordered w-full"
+                        onChange={(e) => setFirstName(e.target.value)}
+                      />
+                    </label>
+                    <label className="form-control">
+                      <div className="label">
+                        <span className="label-text">Last Name</span>
+                      </div>
+                      <input
+                        type="text"
+                        value={lastName}
+                        className="input input-bordered w-full"
+                        onChange={(e) => setLastName(e.target.value)}
+                      />
+                    </label>
                   </div>
-                  <input
-                    type="text"
-                    value={firstName}
-                    className="input input-bordered w-full max-w-xs"
-                    onChange={(e) => setFirstName(e.target.value)}
-                  />
-                </label>
-                <label className="form-control w-full max-w-xs my-2">
-                  <label className="form-control w-full max-w-xs my-2">
+
+                  <label className="form-control">
                     <div className="label">
-                      <span className="label-text">Last Name:</span>
+                      <span className="label-text">Photo URL</span>
                     </div>
                     <input
                       type="text"
-                      value={lastName}
-                      className="input input-bordered w-full max-w-xs"
-                      onChange={(e) => setLastName(e.target.value)}
+                      value={photoUrl}
+                      className="input input-bordered w-full"
+                      onChange={(e) => setPhotoUrl(e.target.value)}
                     />
                   </label>
-                  <div className="label">
-                    <span className="label-text">Photo URL :</span>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <label className="form-control">
+                      <div className="label">
+                        <span className="label-text">Age</span>
+                      </div>
+                      <input
+                        type="number"
+                        value={age}
+                        className="input input-bordered w-full"
+                        onChange={(e) => setAge(e.target.value)}
+                      />
+                    </label>
+                    <label className="form-control">
+                      <div className="label">
+                        <span className="label-text">Gender</span>
+                      </div>
+                      <input
+                        type="text"
+                        value={gender}
+                        className="input input-bordered w-full"
+                        onChange={(e) =>
+                          setGender(e.target.value.toLowerCase())
+                        }
+                      />
+                    </label>
                   </div>
-                  <input
-                    type="text"
-                    value={photoUrl}
-                    className="input input-bordered w-full max-w-xs"
-                    onChange={(e) => setPhotoUrl(e.target.value)}
-                  />
-                </label>
-                <label className="form-control w-full max-w-xs my-2">
-                  <div className="label">
-                    <span className="label-text">Age:</span>
-                  </div>
-                  <input
-                    type="number"
-                    value={age}
-                    className="input input-bordered w-full max-w-xs"
-                    onChange={(e) => setAge(e.target.value)}
-                  />
-                </label>
-                <label className="form-control w-full max-w-xs my-2">
-                  <div className="label">
-                    <span className="label-text">Gender:</span>
-                  </div>
-                  <input
-                    type="text"
-                    value={gender}
-                    className="input input-bordered w-full max-w-xs"
-                    onChange={(e) => setGender(e.target.value.toLowerCase())}
-                  />
-                </label>
-                <label className="form-control w-full max-w-xs my-2">
-                  <div className="label">
-                    <span className="label-text">About:</span>
-                  </div>
-                  <input
-                    type="text"
-                    value={about}
-                    className="input input-bordered w-full max-w-xs"
-                    onChange={(e) => setAbout(e.target.value)}
-                  />
-                </label>
-                <label className="form-control w-full max-w-xs my-2">
-                  <div className="label">
-                    <span className="label-text">Skills:</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="text"
-                      value={newSkill}
-                      className="input input-bordered w-full"
-                      onChange={(e) => setNewSkill(e.target.value)}
+
+                  <label className="form-control">
+                    <div className="label">
+                      <span className="label-text">About</span>
+                    </div>
+                    <textarea
+                      value={about}
+                      className="textarea textarea-bordered w-full h-24"
+                      onChange={(e) => setAbout(e.target.value)}
                     />
-                    <button
-                      className="btn btn-primary"
-                      onClick={handleAddSkill}
-                    >
-                      Add Skill
-                    </button>
-                  </div>
-                  <ul className="mt-2">
-                    {skills.map((skill, index) => (
-                      <li
-                        key={index}
-                        className="flex items-center justify-between"
+                  </label>
+
+                  <div className="form-control">
+                    <div className="label">
+                      <span className="label-text">Skills</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={newSkill}
+                        className="input input-bordered flex-1"
+                        placeholder="Add a new skill"
+                        onChange={(e) => setNewSkill(e.target.value)}
+                      />
+                      <button
+                        className="btn btn-primary"
+                        onClick={handleAddSkill}
                       >
-                        <span>{skill}</span>
-                        <button
-                          className="btn btn-sm btn-error"
-                          onClick={() => handleRemoveSkill(skill)}
+                        Add
+                      </button>
+                    </div>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {skills.map((skill, index) => (
+                        <div
+                          key={index}
+                          className="badge badge-primary gap-2 p-3"
                         >
-                          Remove
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </label>
-              </div>
-              <p className="text-red-500">{error}</p>
-              <div className="card-actions justify-center m-2">
-                <button className="btn btn-primary" onClick={saveProfile}>
-                  Save Profile
-                </button>
+                          {skill}
+                          <button
+                            className="btn btn-xs btn-circle btn-ghost"
+                            onClick={() => handleRemoveSkill(skill)}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {error && <p className="text-error mt-4">{error}</p>}
+
+                <div className="card-actions justify-center mt-6">
+                  <button
+                    className="btn btn-primary w-full"
+                    onClick={saveProfile}
+                  >
+                    Save Profile
+                  </button>
+                </div>
               </div>
             </div>
           </div>
+
+          {/* Preview Card */}
+          <div className="w-full lg:w-1/2">
+            <div className="sticky top-8">
+              <h3 className="text-xl font-semibold text-center mb-4">
+                Profile Preview
+              </h3>
+              <UserCard
+                feed={{ firstName, lastName, photoUrl, age, gender, about }}
+              />
+            </div>
+          </div>
         </div>
-        <UserCard
-          feed={{ firstName, lastName, photoUrl, age, gender, about }}
-        />
       </div>
+
       {showToast && (
         <div className="toast toast-top toast-center">
           <div className="alert alert-success">
@@ -208,6 +238,3 @@ export default EditProfile;
 //   response.data.whatever key pass from backend
 // setError(err.response.data.message);
 // setError(err.response.data.error);
-
-
-

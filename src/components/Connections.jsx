@@ -5,10 +5,8 @@ import { BASE_URL } from "../utils/constants";
 import { addConnections } from "../utils/connectionSlice";
 import { Link } from "react-router";
 
-
 const Connections = () => {
   const connections = useSelector((state) => state.connections);
-  console.log("connections",connections);
   const dispatch = useDispatch();
   const fetchConnections = async () => {
     try {
@@ -36,11 +34,12 @@ const Connections = () => {
       </div>
     );
   }
-  
 
   return (
-    <div className="text-center my-10">
-      <h1 className="text-bold text-white text-3xl">Connections</h1>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold text-white text-center mb-8">
+        Connections
+      </h1>
 
       {connections.map((connection) => {
         const { _id, firstName, lastName, photoUrl, age, gender, about } =
@@ -49,28 +48,36 @@ const Connections = () => {
         return (
           <div
             key={_id}
-            className="flex m-4 p-4 rounded-lg bg-base-300 w-1/2 mx-auto"
+            className="flex items-center gap-6 p-6 rounded-xl bg-base-300 w-full max-w-3xl mx-auto mb-6 shadow-lg hover:shadow-xl transition-shadow duration-300"
           >
-            <div>
+            <div className="relative">
               <img
                 alt="photo"
-                className="w-20 h-20 rounded-full object-cover"
+                className="w-24 h-24 rounded-full object-cover border-4 border-primary"
                 src={photoUrl}
               />
+              <div className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-base-300"></div>
             </div>
-            <div className="text-left mx-4 ">
-              <h2 className="font-bold text-xl">
+
+            <div className="flex-1 text-left">
+              <h2 className="font-bold text-xl text-white mb-1">
                 {firstName + " " + lastName}
               </h2>
-              {age && gender && <p>{age + ", " + gender}</p>}
-              <p>{about}</p>
+              {age && gender && (
+                <p className="text-gray-400 text-sm mb-2">
+                  {age + ", " + gender}
+                </p>
+              )}
+              <p className="text-gray-300 line-clamp-2">{about}</p>
             </div>
+
             <Link to={"/chat/" + _id}>
-              <button className="btn btn-primary ">Chat</button>
+              <button className="btn btn-primary min-w-[100px] hover:scale-105 transition-transform duration-200">
+                Chat
+              </button>
             </Link>
           </div>
         );
-        
       })}
     </div>
   );
