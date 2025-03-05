@@ -1,15 +1,18 @@
-import axios from "axios";
+import axios from "../utils/axios-config";
 import { useDispatch, useSelector } from "react-redux";
 import { addFeed } from "../utils/feedSlice";
 import { useEffect, useState } from "react";
 import { BASE_URL } from "../utils/constants";
 import UserCard from "./UserCard";
+import { useNavigate } from "react-router";
+
 
 const Feed = () => {
   const feed = useSelector((state) => state.feed);
   const dispatch = useDispatch();
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const getFeed = async () => {
     if (feed) return;
@@ -17,12 +20,50 @@ const Feed = () => {
     try {
       const res = await axios.get(BASE_URL + "/feed", {
         withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
-      dispatch(addFeed(res?.data?.data));
-      setError(null);
+
+      // Check if response has data
+      if (res?.data?.data) {
+        dispatch(addFeed(res.data.data));
+        setError(null);
+      } else {
+        throw new Error("Invalid response format");
+      }
     } catch (err) {
       console.error("Error fetching feed:", err);
-      setError("Failed to load feed. Please try again later.");
+
+      // Handle different types of errors
+      if (err.response) {
+        // Server responded with error status
+        switch (err.response.status) {
+          case 401:
+            // Unauthorized - token missing or invalid
+            setError("Your session has expired. Please login again.");
+            // Optionally redirect to login
+            setTimeout(() => navigate("/login"), 2000);
+            break;
+          case 403:
+            setError("You don't have permission to access this resource.");
+            break;
+          case 404:
+            setError("Feed not found.");
+            break;
+          default:
+            setError(
+              err.response.data.message ||
+                "Failed to load feed. Please try again later."
+            );
+        }
+      } else if (err.request) {
+        // Request was made but no response received
+        setError("No response from server. Please check your connection.");
+      } else {
+        // Something else went wrong
+        setError("An unexpected error occurred.");
+      }
     } finally {
       setLoading(false);
     }
@@ -33,18 +74,20 @@ const Feed = () => {
   }, []);
 
   if (loading) {
-    return <h1 className="flex justify-center my-10">Loading feed...</h1>;
+    return (
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <div className="loading loading-spinner loading-lg"></div>
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center my-10 text-center">
-        <h1 className="text-2xl font-bold text-red-600">Oops!</h1>
-        <p className="text-gray-600">
-          Something went wrong while loading the feed.
-        </p>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4">
+        <h1 className="text-2xl font-bold text-error mb-4">Oops!</h1>
+        <p className="text-gray-600 mb-6">{error}</p>
         <button
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400"
+          className="btn btn-primary"
           onClick={getFeed}
           disabled={loading}
         >
@@ -56,12 +99,20 @@ const Feed = () => {
 
   if (!feed) return null;
 
-  if (feed.length === 0)
-    return <h1 className="flex justify-center my-10">No new users found!</h1>;
+  if (feed.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4">
+        <h1 className="text-2xl font-bold mb-4">No New Users Found</h1>
+        <p className="text-gray-600">Check back later for new connections!</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex justify-center my-10">
-      <UserCard feed={feed[0]} />
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex justify-center">
+        <UserCard feed={feed[0]} />
+      </div>
     </div>
   );
 };

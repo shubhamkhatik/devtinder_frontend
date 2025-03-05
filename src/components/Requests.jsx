@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../utils/axios-config";
 import { useDispatch, useSelector } from "react-redux";
 import { BASE_URL } from "../utils/constants";
 import { addRequests, removeRequest } from "../utils/requestsSlice";

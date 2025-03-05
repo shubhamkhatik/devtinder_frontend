@@ -3,8 +3,7 @@ import { Outlet, useNavigate } from "react-router";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { useSelector, useDispatch } from "react-redux";
-import { BASE_URL } from "../utils/constants";
-import axios from "axios";
+import axios from "../utils/axios-config";
 import { addUser } from "../utils/userSlice";
 
 const Body = () => {
@@ -14,11 +13,8 @@ const Body = () => {
 
   const getUserByToken = async () => {
     try {
-      //insted we can use profile/view api to get user
-      const res = await axios.get(BASE_URL + "/auth/me", {
-        withCredentials: true,
-      }); 
-      dispatch(addUser(res.data.data)); 
+      const res = await axios.get("/auth/me");
+      dispatch(addUser(res.data.data));
     } catch (error) {
       console.error("Authentication failed:", error);
       dispatch(addUser(null));
@@ -27,10 +23,11 @@ const Body = () => {
   };
 
   useEffect(() => {
-    if (!user) {
+    // Check if we're not on login page and user is null
+    if (!user && !window.location.pathname.includes("/login")) {
       getUserByToken();
     }
-  }, [user]);
+  }, [user]); // Add user back to dependency array
 
   return (
     <>
