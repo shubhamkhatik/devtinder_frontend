@@ -3,7 +3,7 @@ import { Outlet, useNavigate } from "react-router";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { useSelector, useDispatch } from "react-redux";
-import axios from "../utils/axios-config";
+import axios from "axios"
 import { addUser } from "../utils/userSlice";
 
 const Body = () => {
