@@ -11,6 +11,9 @@ const Chat = () => {
   const { targetUserId } = useParams();
   const [friendWarn, setFriendWarn] = useState("");
   const [messages, setMessages] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const user = useSelector((store) => store.user);
   const userId = user?._id;
@@ -18,33 +21,53 @@ const Chat = () => {
   // Ref for auto-scroll
   const messagesEndRef = useRef(null);
 
-  const fetchChatMessages = useCallback(async () => {
-    const chat = await axios.get(`${BASE_URL}/chat/${targetUserId}`, {
-      withCredentials: true,
-    });
-    const chatMessages = chat?.data?.messages.map((msg) => {
-      const { senderId, text, updatedAt } = msg;
-      return {
-        firstName: senderId?.firstName,
-        lastName: senderId?.lastName,
-        text,
-        updatedAt,
-      };
-    });
-    setMessages(chatMessages);
-    // console.log("Chat messages1:", messages);
-  }, [targetUserId]);
+  // Fetch chat messages for a given page (default 1)
+  const fetchChatMessages = useCallback(
+    async (fetchPage = 1) => {
+      setIsLoading(true);
+      try {
+        const chat = await axios.get(
+          `${BASE_URL}/chat/${targetUserId}?page=${fetchPage}&limit=10`,
+          {
+            withCredentials: true,
+          }
+        );
+        const chatMessages = chat?.data?.messages.map((msg) => {
+          const { senderId, text, updatedAt } = msg;
+          return {
+            firstName: senderId?.firstName,
+            lastName: senderId?.lastName,
+            text,
+            updatedAt,
+          };
+        });
+        setTotalPages(chat?.data?.pagination?.totalPages || 1);
+        setPage(fetchPage);
+        if (fetchPage === 1) {
+          setMessages(chatMessages);
+        } else {
+          setMessages((prev) => [...chatMessages, ...prev]);
+        }
+      } catch (err) {
+        console.error("Error fetching chat messages:", err);
+        setFriendWarn("Failed to load messages. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [targetUserId]
+  );
 
   useEffect(() => {
-    fetchChatMessages();
+    fetchChatMessages(1);
   }, [fetchChatMessages]);
 
-  // Auto-scroll to bottom when messages change
+  // Auto-scroll to bottom when messages change (only on new message, not on pagination)
   useEffect(() => {
-    if (messagesEndRef.current) {
+    if (messagesEndRef.current && page === 1) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages]);
+  }, [messages, page]);
   useEffect(() => {
     if (!userId) {
       return;
@@ -58,7 +81,6 @@ const Chat = () => {
     });
 
     socket.on("messageReceived", ({ firstName, lastName, text, updatedAt }) => {
-      // console.log("jjjj", firstName + " :  " + text);
       setMessages((messages) => [
         ...messages,
         { firstName, lastName, text, updatedAt },
@@ -72,7 +94,7 @@ const Chat = () => {
     return () => {
       socket.disconnect();
     };
-  }, [userId, targetUserId]);
+  }, [userId, targetUserId, user.firstName]);
   const sendMessage = () => {
     if (newMessage.trim() === "") return;
     const socket = createSocketConnection();
@@ -91,13 +113,40 @@ const Chat = () => {
     }
   };
 
+  // Handler for scroll event to load more messages when scrolled to top
+  const chatContainerRef = useRef(null);
+  const handleScroll = async () => {
+    if (!chatContainerRef.current || isLoading) return;
+    if (chatContainerRef.current.scrollTop === 0 && page < totalPages) {
+      const prevHeight = chatContainerRef.current.scrollHeight;
+      await fetchChatMessages(page + 1);
+      // After loading, maintain scroll position
+      setTimeout(() => {
+        if (chatContainerRef.current) {
+          chatContainerRef.current.scrollTop =
+            chatContainerRef.current.scrollHeight - prevHeight;
+        }
+      }, 100);
+    }
+  };
+
   return (
     <div className="w-3/4 mx-auto border border-gray-600 m-5 h-[70vh] flex flex-col">
       <h1 className="p-5 border-b border-gray-600">Chat</h1>
       {friendWarn && (
         <p className="text-red-500 text-center p-2">{friendWarn}</p>
       )}
-      <div className="flex-1 overflow-scroll p-5">
+      <div
+        className="flex-1 overflow-scroll p-5"
+        ref={chatContainerRef}
+        onScroll={handleScroll}
+        style={{ overflowY: "auto" }}
+      >
+        {isLoading && page > 1 && (
+          <div className="text-center text-xs text-gray-400 mb-2">
+            Loading...
+          </div>
+        )}
         {messages.map((msg, index) => {
           return (
             <div
