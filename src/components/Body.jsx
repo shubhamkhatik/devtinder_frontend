@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios"
 import { addUser } from "../utils/userSlice";
+import { BASE_URL } from "../utils/constants";
 
 const Body = () => {
   const navigate = useNavigate();
@@ -13,7 +14,9 @@ const Body = () => {
 
   const getUserByToken = async () => {
     try {
-      const res = await axios.get("/auth/me");
+      const res = await axios.get(BASE_URL +"/auth/me",{
+        withCredentials: true
+      });
       dispatch(addUser(res.data.data));
     } catch (error) {
       console.error("Authentication failed:", error);

@@ -2,7 +2,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { BASE_URL } from "../utils/constants";
 import { addRequests, removeRequest } from "../utils/requestsSlice";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Toast from "./Toast";
 import useToast from "../hooks/useToast";
 
@@ -13,7 +13,7 @@ const Requests = () => {
 
   const reviewRequest = async (status, _id) => {
     try {
-      const res = await axios.post(
+      await axios.post(
         `${BASE_URL}/request/review/${status}/${_id}`,
         {},
         { withCredentials: true }
@@ -21,7 +21,7 @@ const Requests = () => {
       dispatch(removeRequest(_id));
       showToast(`Request ${status} successfully!`, "success");
     } catch (err) {
-      showToast("Failed to process the request. Please try again.", "error");
+      showToast("Failed to process the request. Please try again.", err);
     }
   };
 

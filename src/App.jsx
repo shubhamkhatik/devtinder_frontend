@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, useNavigate } from "react-router";
+import { BrowserRouter, Route, Routes } from "react-router";
 import Feed from "./components/Feed";
 import Login from "./components/Login";
 import Profile from "./components/Profile";
@@ -7,6 +7,8 @@ import Requests from "./components/Requests";
 import { Provider } from "react-redux";
 import RTKstore from "./utils/RTKstore";
 import Body from "./components/Body";
+import PageNotFound from "./components/PageNotFound";
+import Chat from "./components/Chat";
 
 function App() {
   return (
@@ -20,9 +22,10 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/connections" element={<Connections />} />
             <Route path="/requests" element={<Requests />} />
+            <Route path="/chat/:targetUserId" element={<Chat/>} />
             {/* child Route close */}
           </Route>
-          <Route path="*" element={<div>Page not found! 404</div>} />
+          <Route path="*" element={<PageNotFound />} />
         </Routes>
       </BrowserRouter>
     </Provider>

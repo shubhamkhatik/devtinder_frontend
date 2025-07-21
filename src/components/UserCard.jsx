@@ -6,17 +6,17 @@ import useToast from "../hooks/useToast";
 import Toast from "./Toast";
 
 const UserCard = ({ feed }) => {
+  const { toast, showToast } = useToast();
+  const dispatch = useDispatch();
   if (!feed) {
     return null;
   }
-  const { toast, showToast } = useToast();
 
   const { _id, firstName, lastName, photoUrl, age, gender, about } = feed;
-  const dispatch = useDispatch();
 
   const handleSendRequest = async (status, userId) => {
     try {
-      const res = await axios.post(
+      await axios.post(
         `${BASE_URL}/request/send/${status}/${userId}`,
         {},
         { withCredentials: true }
