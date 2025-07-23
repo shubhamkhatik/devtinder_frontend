@@ -9,6 +9,7 @@ import RTKstore from "./utils/RTKstore";
 import Body from "./components/Body";
 import PageNotFound from "./components/PageNotFound";
 import Chat from "./components/Chat";
+import Premium from "./components/Premium";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/connections" element={<Connections />} />
             <Route path="/requests" element={<Requests />} />
+            <Route path="/premium" element={<Premium />} />
             <Route path="/chat/:targetUserId" element={<Chat/>} />
             {/* child Route close */}
           </Route>
