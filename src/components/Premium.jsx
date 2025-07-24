@@ -26,7 +26,7 @@ const Premium = () => {
       },
       { withCredentials: true }
     );
-
+console.log("order,", order);
     const { amount, keyId, currency, notes, orderId } = order.data;
 
     const options = {
